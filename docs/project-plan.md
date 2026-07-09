@@ -2,7 +2,7 @@
 
 ## Overview
 
-This analysis was designed to explore the commercial performance of console and PC video games between 2018 and 2025. Using SQL, Python and Power BI, the project investigates market trends, pricing, platform strategy and review performance to identify comparable games and support commercial decision-making in the games industry through benchmarking, scenario analysis and forecasting.
+This analysis was designed to explore the commercial performance of console and PC video games between 2018 and 2024. Using SQL, Python and Power BI, the project investigates market trends, pricing, platform strategy and review performance to identify benchmarks and support commercial decision-making in the games industry using forecasting.
 
 ## Problem
 
@@ -15,6 +15,8 @@ This project aims to investigate how historical market data can be used to
 - understand factors affecting commercial performance
 - support scenario analysis
 - provide forecasts for hypothetical future titles
+
+The analysis period chosen is 2018–2024 to reflect the modern console and PC gaming landscape and to account for COVID's effects on the market.
 
 ## Questions
 
@@ -43,6 +45,23 @@ The project aims to answer questions such as:
 | Python | Data cleaning and analysis |
 | Power BI | Dashboard development |
 | Git/GitHub | Version control |
+
+## Data Requirements
+
+The project requires data sources that allow analysis of:
+
+- Game metadata
+- Commercial performance
+- Platform availability
+- Reviews and ratings
+- Pricing information
+- Release timing
+
+Datasets will be evaluated based on:
+
+- relevance to the business questions
+- data quality
+- availability of required variables
 
 ## Project Phases
 
