@@ -287,3 +287,80 @@ def create_game_releases(vg, steam, games, platforms):
             "platform_release_date"
         ]
     ]
+
+def create_sales(vg, games, platforms, game_releases):
+
+    sales = vg[
+        [
+            "title",
+            "console",
+            "release_date",
+            "critic_score",
+            "total_sales",
+            "na_sales",
+            "jp_sales",
+            "pal_sales",
+            "other_sales"
+        ]
+    ].copy()
+
+    # Lookup game_id
+    sales = sales.merge(
+        games[["game_id", "title"]],
+        on="title",
+        how="left"
+    )
+
+    # Lookup platform_id
+    sales = sales.merge(
+        platforms[["platform_id", "platform_name"]],
+        left_on="console",
+        right_on="platform_name",
+        how="left"
+    )
+
+    # Lookup release_id
+    sales = sales.merge(
+        game_releases[
+            [
+                "release_id",
+                "game_id",
+                "platform_id",
+                "platform_release_date"
+            ]
+        ],
+        left_on=[
+            "game_id",
+            "platform_id",
+            "release_date"
+        ],
+        right_on=[
+            "game_id",
+            "platform_id",
+            "platform_release_date"
+        ],
+        how="left"
+    )
+
+    sales = sales.rename(
+        columns={
+            "na_sales": "north_america_sales",
+            "pal_sales": "europe_sales",
+            "jp_sales": "japan_sales"
+        }
+    )
+
+    sales["sales_id"] = sales.index + 1
+
+    return sales[
+        [
+            "sales_id",
+            "release_id",
+            "total_sales",
+            "north_america_sales",
+            "europe_sales",
+            "japan_sales",
+            "other_sales",
+            "critic_score"
+        ]
+    ]
