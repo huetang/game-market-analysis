@@ -7,7 +7,8 @@ from transform import (
     create_platforms,
     create_games,
     create_game_releases,
-    create_sales
+    create_sales,
+    create_steam_metrics
 )
 
 from load import load_dataframe
@@ -17,6 +18,7 @@ def run_etl():
     vg = extract_vgchartz()
     steam = extract_steam()
     vg = vg[vg["console"] != "Series"].copy() #not individual game releases
+    vg = vg[vg["console"] != "All"].copy()
     publishers = create_publishers(vg)
     developers = create_developers(vg)
     genres = create_genres(vg)
@@ -26,8 +28,6 @@ def run_etl():
         publishers,
         developers,
         genres)
-    print(games.columns)
-    print(games.head())
     game_releases = create_game_releases(
         vg,
         steam,
@@ -39,9 +39,16 @@ def run_etl():
         platforms,
         game_releases
     )
-
-    print("Game Releases")
-    print(game_releases.head())
+    steam_metrics = create_steam_metrics(
+    steam,
+    games
+)
+    print(
+    len(steam_metrics),
+    "Steam games matched"
+)
+    print("Steam Metrics")
+    print(steam_metrics.head())
     load_dataframe(publishers, "Publisher")
     load_dataframe(developers, "Developer")
     load_dataframe(genres, "Genre")
@@ -49,5 +56,5 @@ def run_etl():
     load_dataframe(games,"Game")
     load_dataframe(game_releases,"Game_Release")
     load_dataframe(sales,"Sales")
-
+    load_dataframe(steam_metrics,"Steam_Metrics")
 run_etl()

@@ -304,14 +304,13 @@ def create_sales(vg, games, platforms, game_releases):
         ]
     ].copy()
 
-    # Lookup game_id
+
     sales = sales.merge(
         games[["game_id", "title"]],
         on="title",
         how="left"
     )
 
-    # Lookup platform_id
     sales = sales.merge(
         platforms[["platform_id", "platform_name"]],
         left_on="console",
@@ -319,7 +318,6 @@ def create_sales(vg, games, platforms, game_releases):
         how="left"
     )
 
-    # Lookup release_id
     sales = sales.merge(
         game_releases[
             [
@@ -362,5 +360,63 @@ def create_sales(vg, games, platforms, game_releases):
             "japan_sales",
             "other_sales",
             "critic_score"
+        ]
+    ]
+
+def create_steam_metrics(steam, games):
+
+    metrics = steam[
+        [
+            "appid",
+            "name",
+            "estimated_owners",
+            "peak_ccu",
+            "price",
+            "positive",
+            "negative",
+            "average_playtime_forever",
+            "metacritic_score"
+        ]
+    ].copy()
+
+
+    metrics = metrics.merge(
+        games[
+            [
+                "game_id",
+                "title"
+            ]
+        ],
+        left_on="name",
+        right_on="title",
+        how="inner"
+    )
+
+
+    metrics = metrics.rename(
+        columns={
+            "appid": "steam_app_id",
+            "positive": "positive_reviews",
+            "negative": "negative_reviews",
+            "average_playtime_forever": "average_playtime"
+        }
+    )
+
+
+    metrics["steam_metric_id"] = metrics.index + 1
+
+
+    return metrics[
+        [
+            "steam_metric_id",
+            "game_id",
+            "steam_app_id",
+            "estimated_owners",
+            "peak_ccu",
+            "price",
+            "positive_reviews",
+            "negative_reviews",
+            "average_playtime",
+            "metacritic_score"
         ]
     ]
