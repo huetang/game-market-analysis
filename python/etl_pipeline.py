@@ -9,32 +9,17 @@ from transform import (
 
 from load import load_dataframe
 
+def run_etl():
 
-#Extract
-vg = extract_vgchartz()
-steam = extract_steam()
+    vg = extract_vgchartz()
+    steam = extract_steam()
 
-#Transform
-publishers = create_publishers(vg)
-developers = create_developers(vg)
-genres = create_genres(vg)
-platforms = create_platforms(vg, steam)
+    publishers = create_publishers(vg)
+    developers = create_developers(vg)
+    genres = create_genres(vg)
+    platforms = create_platforms(vg, steam)
 
-#Debug
-print("Publishers")
-print(publishers.head())
-
-print("Developers")
-print(developers.head())
-
-print("Genres")
-print(genres.head())
-
-print("Platforms")
-print(platforms.head())
-
-#Load
-load_dataframe(publishers, "Publisher")
-load_dataframe(developers, "Developer")
-load_dataframe(genres, "Genre")
-load_dataframe(platforms, "Platform")
+    load_dataframe(publishers, "Publisher")
+    load_dataframe(developers, "Developer")
+    load_dataframe(genres, "Genre")
+    load_dataframe(platforms, "Platform")

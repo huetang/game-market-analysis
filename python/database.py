@@ -1,3 +1,4 @@
+#connecting to database
 import sqlite3
 import os
 

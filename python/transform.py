@@ -70,12 +70,22 @@ def create_platforms(vg, steam):
         vg["console"]
         .dropna()
         .drop_duplicates()
+    )
+
+    #remove PC if it exists in VGChartz so that Steam data can be classified as PC
+    console_platforms = console_platforms[
+        console_platforms.str.upper() != "PC"
+    ]
+
+    console_platforms = (
+        console_platforms
         .sort_values()
         .reset_index(drop=True)
         .to_frame(name="platform_name")
     )
 
     console_platforms["platform_type"] = "Console"
+
 
     pc_platform = pd.DataFrame(
         {
@@ -84,18 +94,18 @@ def create_platforms(vg, steam):
         }
     )
 
+
     platforms = pd.concat(
-        [console_platforms, pc_platform],
+        [
+            console_platforms,
+            pc_platform
+        ],
         ignore_index=True
     )
 
-    platforms = (
-        platforms
-        .drop_duplicates(subset="platform_name")
-        .reset_index(drop=True)
-    )
 
     platforms["platform_id"] = platforms.index + 1
+
 
     return platforms[
         [
