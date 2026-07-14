@@ -14,7 +14,6 @@ def create_publishers(vg):
 
     publishers["publisher_id"] = publishers.index + 1
 
-
     return publishers[
         [
             "publisher_id",
@@ -64,25 +63,22 @@ def create_genres(vg):
         ]
     ]
 
+
 def create_platforms(vg, steam):
 
     console_platforms = (
         vg["console"]
         .dropna()
         .drop_duplicates()
-    )
-
-    #remove PC if it exists in VGChartz so that Steam data can be classified as PC
-    console_platforms = console_platforms[
-        console_platforms.str.upper() != "PC"
-    ]
-
-    console_platforms = (
-        console_platforms
         .sort_values()
         .reset_index(drop=True)
         .to_frame(name="platform_name")
     )
+
+    #remove PC to classify as PC console type later
+    console_platforms = console_platforms[
+        console_platforms["platform_name"].str.upper() != "PC"
+    ]
 
     console_platforms["platform_type"] = "Console"
 
@@ -104,6 +100,13 @@ def create_platforms(vg, steam):
     )
 
 
+    platforms = (
+        platforms
+        .drop_duplicates(subset="platform_name")
+        .reset_index(drop=True)
+    )
+
+
     platforms["platform_id"] = platforms.index + 1
 
 
@@ -112,5 +115,61 @@ def create_platforms(vg, steam):
             "platform_id",
             "platform_name",
             "platform_type"
+        ]
+    ]
+
+
+def create_games(vg, publishers, developers, genres):
+
+    games = vg[
+        [
+            "title",
+            "release_date",
+            "publisher",
+            "developer",
+            "genre"
+        ]
+    ].copy()
+
+
+    games = (
+        games
+        .drop_duplicates(subset="title")
+        .reset_index(drop=True)
+    )
+
+    games = games.merge(
+        publishers,
+        left_on="publisher",
+        right_on="publisher_name",
+        how="left"
+    )
+
+
+    games = games.merge(
+        developers,
+        left_on="developer",
+        right_on="developer_name",
+        how="left"
+    )
+
+
+    games = games.merge(
+        genres,
+        left_on="genre",
+        right_on="genre_name",
+        how="left"
+    )
+
+    games["game_id"] = games.index + 1
+
+    return games[
+        [
+            "game_id",
+            "title",
+            "release_date",
+            "publisher_id",
+            "developer_id",
+            "genre_id"
         ]
     ]
