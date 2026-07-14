@@ -16,7 +16,7 @@ This project aims to investigate how historical market data can be used to
 - support scenario analysis
 - provide forecasts for hypothetical future titles
 
-The analysis period chosen is 2018–2024 to reflect the modern console and PC gaming landscape and to account for COVID's effects on the market.
+The analysis period chosen is 2018–2024 to reflect the modern console and PC gaming landscape and to account for COVID's effects on the market. It covers the transition from the previous console generation into the PlayStation 5 and Xbox Series X|S era.
 
 ## Questions
 
