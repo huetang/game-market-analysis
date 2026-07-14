@@ -173,3 +173,117 @@ def create_games(vg, publishers, developers, genres):
             "genre_id"
         ]
     ]
+
+def create_game_releases(vg, steam, games, platforms):
+
+    vg_releases = vg[
+        [
+            "title",
+            "console",
+            "release_date"
+        ]
+    ].copy()
+
+    vg_releases = vg_releases.merge(
+        games[["game_id", "title"]],
+        on="title",
+        how="left"
+    )
+
+    vg_releases = vg_releases.merge(
+        platforms[
+            [
+                "platform_id",
+                "platform_name"
+            ]
+        ],
+        left_on="console",
+        right_on="platform_name",
+        how="left"
+    )
+
+    vg_releases = vg_releases.rename(
+        columns={
+            "release_date": "platform_release_date"
+        }
+    )
+
+    vg_releases = vg_releases[
+        [
+            "game_id",
+            "platform_id",
+            "platform_release_date"
+        ]
+    ]
+
+
+    steam_releases = steam[
+        [
+            "name",
+            "release_date"
+        ]
+    ].copy()
+
+    steam_releases = steam_releases.rename(
+        columns={
+            "name": "title"
+        }
+    )
+
+    steam_releases = steam_releases.merge(
+        games[
+            [
+                "game_id",
+                "title"
+            ]
+        ],
+        on="title",
+        how="inner"
+    )
+
+    pc_platform = platforms.loc[
+        platforms["platform_name"] == "PC",
+        "platform_id"
+    ].iloc[0]
+
+    steam_releases["platform_id"] = pc_platform
+
+    steam_releases = steam_releases.rename(
+        columns={
+            "release_date": "platform_release_date"
+        }
+    )
+
+    steam_releases = steam_releases[
+        [
+            "game_id",
+            "platform_id",
+            "platform_release_date"
+        ]
+    ]
+
+
+    releases = pd.concat(
+        [
+            vg_releases,
+            steam_releases
+        ],
+        ignore_index=True
+    )
+
+    releases = (
+        releases
+        .drop_duplicates()
+        .reset_index(drop=True)
+    )
+
+    releases["release_id"] = releases.index + 1
+
+    return releases[
+        [
+            "release_id",
+            "game_id",
+            "platform_id",
+            "platform_release_date"
+        ]
+    ]
