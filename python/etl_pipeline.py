@@ -39,22 +39,23 @@ def run_etl():
         platforms,
         game_releases
     )
+
     steam_metrics = create_steam_metrics(
-    steam,
-    games
-)
+        steam,
+        games
+    )
+
     print(
-    len(steam_metrics),
-    "Steam games matched"
-)
-    print("Steam Metrics")
-    print(steam_metrics.head())
+        len(steam_metrics),
+        "Steam games matched"
+    )
+
     load_dataframe(publishers, "Publisher")
     load_dataframe(developers, "Developer")
     load_dataframe(genres, "Genre")
     load_dataframe(platforms, "Platform")
-    load_dataframe(games,"Game")
-    load_dataframe(game_releases,"Game_Release")
-    load_dataframe(sales,"Sales")
-    load_dataframe(steam_metrics,"Steam_Metrics")
+    load_dataframe(games, "Game")
+    load_dataframe(game_releases, "Game_Release")
+    load_dataframe(sales, "Sales")
+    load_dataframe(steam_metrics, "Steam_Metrics")
 run_etl()

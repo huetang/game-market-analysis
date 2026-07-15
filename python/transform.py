@@ -1,5 +1,38 @@
 import pandas as pd
+import re
 
+
+def clean_title(title):
+
+    if pd.isna(title):
+        return ""
+
+    title = title.lower()
+
+    title = re.sub(
+        r"[^\w\s]",
+        "",
+        title,
+        flags=re.UNICODE
+    )
+
+    remove_words = [
+        "game of the year edition",
+        "goty edition",
+        "goty",
+        "complete edition",
+        "ultimate edition",
+        "definitive edition",
+        "deluxe edition",
+        "special edition"
+    ]
+
+    for word in remove_words:
+        title = title.replace(word, "")
+
+    title = " ".join(title.split())
+
+    return title
 
 def create_publishers(vg):
 
@@ -380,15 +413,46 @@ def create_steam_metrics(steam, games):
     ].copy()
 
 
+    metrics["clean_title"] = metrics["name"].apply(clean_title)
+
+    games = games.copy()
+
+    games["clean_title"] = games["title"].apply(clean_title)
+
+
+    GENERIC_TITLES = [
+        "alone",
+        "cube",
+        "maze",
+        "gravity",
+        "echoes",
+        "afterlife",
+        "lost",
+        "survivor",
+        "journey",
+        "ghost",
+        "alien"
+    ]
+
+
+    metrics = metrics[
+        ~metrics["clean_title"].isin(GENERIC_TITLES)
+    ]
+
+
+    metrics = metrics[
+        metrics["clean_title"].str.len() >= 5
+    ]
+
+
     metrics = metrics.merge(
         games[
             [
                 "game_id",
-                "title"
+                "clean_title"
             ]
         ],
-        left_on="name",
-        right_on="title",
+        on="clean_title",
         how="inner"
     )
 
@@ -403,14 +467,27 @@ def create_steam_metrics(steam, games):
     )
 
 
-    metrics["steam_metric_id"] = metrics.index + 1
+    metrics = (
+        metrics
+        .sort_values(
+            "positive_reviews",
+            ascending=False
+        )
+        .drop_duplicates(
+            subset=["game_id"],
+            keep="first"
+        )
+        .reset_index(drop=True)
+    )
 
+
+    metrics["steam_metric_id"] = metrics.index + 1
 
     return metrics[
         [
             "steam_metric_id",
-            "game_id",
             "steam_app_id",
+            "game_id",
             "estimated_owners",
             "peak_ccu",
             "price",
